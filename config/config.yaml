@@ -42,5 +42,6 @@ default:
         history_length: 20
         system_prompt: "请你扮演一个 AI 助手，用简短的两三句对话来回答用户的问题，并在对话内容中加入合适的标点符号，不需要讨论标点符号相关的内容"
         api_url: 'http://127.0.0.1:11434/v1'
+        api_key: 'ollama'
       LAM_Driver:
         module: avatar/lam/avatar_handler_lam_audio2expression
