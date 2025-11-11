@@ -30,7 +30,7 @@ default:
       SenseVoice:
         enabled: True
         module: asr/sensevoice/asr_handler_sensevoice
-        model_name: "models/iic/SenseVoiceSmall"
+        model_name: "iic/SenseVoiceSmall"
       Edge_TTS:
         module: tts/edgetts/tts_handler_edgetts
         voice: "zh-CN-YunxiaoMultilingualNeural"

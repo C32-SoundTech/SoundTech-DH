@@ -12,7 +12,7 @@ def frpc_server():
     log_path = os.path.join(log_dir, "frpc.log")
     try:
         with open(log_path, "ab+") as log_file:
-            subprocess.Popen(["ssl_certs\\frpc.exe", "-c", "ssl_certs\\frpc.toml"], stdout=log_file, stderr=log_file)
+            subprocess.Popen([f"{project_dir}\\ssl_certs\\frpc.exe", "-c", f"{project_dir}\\ssl_certs\\frpc.toml"], stdout=log_file, stderr=log_file)
     except Exception as e:
         logger.error(f"启动 FRP 内网穿透服务失败: {e}")
     
