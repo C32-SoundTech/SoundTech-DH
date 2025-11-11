@@ -1,0 +1,10 @@
+[project]
+name = "lam"
+version = "0.1.0"
+requires-python = ">=3.10, <3.13"
+dependencies = [
+    "addict~=2.4.0",
+    "yapf==0.40.1",
+    "transformers~=4.44.1",
+    "termcolor~=3.0.1",
+]

@@ -1,0 +1,7 @@
+logs/
+.lock/
+.venv/
+models/
+__pycache__/
+src/handlers/client/rtc_client/dev/
+dump_talk_audio.pcm

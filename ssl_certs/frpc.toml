@@ -1,0 +1,13 @@
+serverAddr = "124.223.89.143"
+serverPort = 7000
+auth.token = "C32"
+
+[log]
+disablePrintColor=true
+
+[[proxies]]
+name = "Dingdust-RTX-5080-443"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 443
+remotePort = 443

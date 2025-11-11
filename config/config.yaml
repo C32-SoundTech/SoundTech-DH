@@ -1,0 +1,46 @@
+default:
+  logger:
+    log_level: "INFO"
+  service:
+    host: "0.0.0.0"
+    port: 443
+    cert_file: "ssl_certs/localhost.crt"
+    cert_key: "ssl_certs/localhost.key"
+  chat_engine:
+    model_root: "models"
+    concurrent_limit: 5
+    handler_search_path:
+      - "src/handlers"
+    handler_configs:
+      LamClient:
+        module: client/h5_rendering_client/client_handler_lam
+        asset_path: "lam_samples/libai.zip"
+        connection_ttl: 1200
+        turn_config:
+          urls: ["turn:124.223.89.143:3478", "turn:zjgsu.icu:3478", "turns:124.223.89.143:5349", "turns:zjgsu.icu:5349"]
+          username: "admin"
+          credential: "admin"
+      SileroVad:
+        module: vad/silerovad/vad_handler_silero
+        speaking_threshold: 0.5
+        start_delay: 2048
+        end_delay: 5000
+        buffer_look_back: 5000
+        speech_padding: 512
+      SenseVoice:
+        enabled: True
+        module: asr/sensevoice/asr_handler_sensevoice
+        model_name: "models/iic/SenseVoiceSmall"
+      Edge_TTS:
+        module: tts/edgetts/tts_handler_edgetts
+        voice: "zh-CN-YunxiaoMultilingualNeural"
+      LLMOpenAICompatible:
+        enabled: True
+        module: llm/openai_compatible/llm_handler_openai_compatible
+        model_name: "qwen3-vl:2b"
+        enable_video_input: True
+        history_length: 20
+        system_prompt: "请你扮演一个 AI 助手，用简短的两三句对话来回答用户的问题，并在对话内容中加入合适的标点符号，不需要讨论标点符号相关的内容"
+        api_url: 'http://127.0.0.1:11434/v1'
+      LAM_Driver:
+        module: avatar/lam/avatar_handler_lam_audio2expression
