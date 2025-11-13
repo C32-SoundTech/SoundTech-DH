@@ -1,0 +1,144 @@
+@use 'sass:color';
+// 主题变量（企业视觉规范）
+$color-primary: #6366f1;
+$color-bg: #f8fafc;
+$color-surface: #ffffff;
+$color-border: #e5e7eb;
+$color-text: #111827;
+$color-muted: #6b7280;
+
+// 气泡与强调色
+$color-user-bg: #fef3c7; // 用户气泡背景（浅琥珀）
+$color-user-border: #f59e0b; // 用户气泡边框（琥珀）
+$color-assist-bg: #ecfeff; // 助手气泡背景（浅青）
+$color-assist-border: #38bdf8; // 助手气泡边框（青）
+
+// 间距刻度（提升层次与留白）
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$radius-1: 8px;
+$radius-2: 12px;
+$radius-3: 14px;
+
+// 混合宏：卡片与过渡
+@mixin card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-2;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+}
+
+@mixin transition {
+  transition: color .16s ease, background-color .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+// 全局与排版（提升可读性）
+// 保持原字体栈，统一文本颜色与背景
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Microsoft YaHei", sans-serif;
+  color: $color-text;
+  background: $color-bg;
+}
+
+// 布局优化：侧栏自适应宽度，整体留白更平衡
+.layout { display: flex; min-height: 100vh; }
+.sidebar {
+  width: clamp(240px, 24vw, 300px); // 响应式侧栏宽度
+  border-right: 1px solid $color-border;
+  padding: $space-4;
+  background: color.adjust($color-bg, $lightness: 2%);
+  overflow-y: auto;
+}
+.sidebar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: $space-3;
+}
+.title { font-size: clamp(16px, 1.6vw, 18px); font-weight: 600; }
+
+// 会话列表卡片化（层次与悬停态）
+.session-list { display: grid; gap: $space-2; }
+.session-item {
+  @include card;
+  padding: $space-3;
+  cursor: pointer;
+  @include transition;
+  &:hover { background: color.adjust($color-surface, $lightness: -1%); box-shadow: 0 2px 6px rgba(99,102,241,0.12); transform: translateY(-1px); }
+}
+.session-id { font-size: 14px; font-weight: 600; color: $color-text; word-break: break-all; }
+.session-meta { margin-top: $space-1; font-size: 12px; color: $color-muted; display: flex; gap: $space-2; }
+.active { border-color: $color-primary; box-shadow: 0 0 0 2px rgba(99,102,241,0.20); }
+
+// 内容区与标题（层次明确）
+.content { flex: 1; display: flex; flex-direction: column; }
+.content-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: $space-3 $space-4;
+  border-bottom: 1px solid $color-border;
+  background: $color-surface;
+}
+.content-title { font-size: clamp(16px, 1.6vw, 20px); font-weight: 600; color: $color-text; }
+
+// 历史消息区（更柔和的背景与留白）
+.history { flex: 1; padding: $space-3 $space-4; overflow-y: auto; background: $color-bg; }
+.load-more {
+  display: inline-block; margin: $space-2 auto; padding: 6px 10px; font-size: 12px;
+  border: 1px solid color.adjust($color-border, $lightness: -8%); border-radius: $radius-1; background: $color-surface; cursor: pointer;
+  @include transition;
+  &:hover { background: color.adjust($color-surface, $lightness: -1%); }
+  &:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.20); border-color: $color-primary; }
+}
+
+// 消息气泡（统一配色与对比度）
+.msg { display: flex; margin: $space-2 0; }
+.msg-user { justify-content: flex-end; }
+.bubble {
+  max-width: 70%; display: inline-block; padding: $space-2 $space-3;
+  border-radius: $radius-3; margin: 6px 0; position: relative; white-space: pre-wrap; word-break: break-word;
+  border: 1px solid transparent; color: $color-text; background: $color-surface;
+}
+.bubble-user { background: $color-user-bg; border-color: $color-user-border; }
+.bubble-assistant { background: $color-assist-bg; border-color: $color-assist-border; }
+.timestamp { font-size: 11px; color: $color-muted; margin-top: 2px; }
+
+// 输入区与按钮（统一尺寸与动效）
+.composer { border-top: 1px solid $color-border; padding: $space-3 $space-4; display: flex; gap: $space-2; background: $color-surface; }
+.composer input {
+  flex: 1; padding: $space-2; border: 1px solid color.adjust($color-border, $lightness: 4%); border-radius: $radius-2;
+  background: $color-surface; color: $color-text;
+  @include transition;
+  &:focus { outline: none; border-color: $color-primary; box-shadow: 0 0 0 3px rgba(99,102,241,0.20); }
+}
+.btn {
+  padding: $space-2 $space-3; border: 1px solid color.adjust($color-border, $lightness: -8%); border-radius: $radius-2; background: $color-surface; cursor: pointer;
+  color: $color-text;
+  @include transition;
+  &:hover { background: color.adjust($color-surface, $lightness: -1%); }
+  &:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.20); border-color: $color-primary; }
+}
+
+// 响应式断点（侧栏宽度、字号与间距调整）
+@media (max-width: 992px) {
+  .sidebar { width: clamp(220px, 28vw, 260px); }
+  .content-title { font-size: clamp(16px, 2vw, 18px); }
+}
+@media (max-width: 768px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid $color-border; }
+  .history { padding: $space-2 $space-3; }
+}
+@media (max-width: 576px) {
+  .title { font-size: 16px; }
+  .session-id { font-size: 13px; }
+  .composer { padding: $space-2 $space-3; }
+}
+
+// 动效偏好（减少动效以提升可访问性）
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

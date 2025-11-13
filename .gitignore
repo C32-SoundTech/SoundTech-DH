@@ -1,9 +1,11 @@
 logs/
 .idea/
 .lock/
+.trae/
 .venv/
 models/
-!src/handlers/avatar/lam/LAM_Audio2Expression/models/
 __pycache__/
-src/handlers/client/rtc_client/dev/
+config/config.yaml
 dump_talk_audio.pcm
+src/handlers/client/rtc_client/dev/
+!src/handlers/avatar/lam/LAM_Audio2Expression/models/

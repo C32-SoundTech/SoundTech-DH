@@ -1,4 +1,5 @@
 import asyncio
+import time
 from pathlib import Path
 from typing import Dict, Optional, cast, Union, Tuple
 from uuid import uuid4
@@ -6,7 +7,7 @@ from uuid import uuid4
 from loguru import logger
 
 from engine_utils.directory_info import DirectoryInfo
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import gradio
 import numpy as np
@@ -107,6 +108,10 @@ class RtcClientSessionDelegate(ClientSessionDelegate):
 class ClientRtcConfigModel(HandlerBaseConfigModel, BaseModel):
     connection_ttl: int = Field(default=900)
     turn_config: Optional[Dict] = Field(default=None)
+
+
+class TextPayload(BaseModel):
+    text: str
 
 
 class ClientRtcContext(HandlerContext):
@@ -225,6 +230,33 @@ class ClientHandlerRtc(ClientHandlerBase):
                 logger.opt(exception=True).error(f"向会话 {session_id} 直接输入文本失败: {e}")
                 return JSONResponse(status_code=500, content={"error": "发送失败"})
 
+        @fastapi.post('/session/{session_id}/input')
+        async def input_to_session_post(session_id: str, payload: TextPayload):
+            session_delegate = self.handler_delegate.find_session_delegate(session_id)
+            if session_delegate is None:
+                msg = f"未找到会话 {session_id}。"
+                logger.error(msg)
+                return JSONResponse(status_code=404, content={"error": msg})
+            try:
+                definition = DataBundleDefinition()
+                definition.add_entry(DataBundleEntry.create_text_entry("avatar_text"))
+                data_bundle = DataBundle(definition)
+                data_bundle.set_main_data(payload.text)
+                data_bundle.add_meta('speech_id', str(uuid4()))
+                data_bundle.add_meta('avatar_text_end', True)
+
+                chat_data = ChatData(
+                    source="client",
+                    type=ChatDataType.AVATAR_TEXT,
+                    data=data_bundle,
+                    timestamp=session_delegate.get_timestamp(),
+                )
+                session_delegate.data_submitter.submit(chat_data)
+                return JSONResponse(status_code=200, content={"status": "ok"})
+            except Exception as e:
+                logger.opt(exception=True).error(f"向会话 {session_id} 直接输入文本失败: {e}")
+                return JSONResponse(status_code=500, content={"error": "发送失败"})
+
         @fastapi.get('/session/{session_id}/answer')
         async def speak_to_session(session_id: str, text: str):
             session_delegate = self.handler_delegate.find_session_delegate(session_id)
@@ -240,11 +272,90 @@ class ClientHandlerRtc(ClientHandlerBase):
                 logger.opt(exception=True).error(f"向会话 {session_id} 发送文本失败: {e}")
                 return JSONResponse(status_code=500, content={"error": "发送失败"})
 
+        @fastapi.post('/session/{session_id}/answer')
+        async def speak_to_session_post(session_id: str, payload: TextPayload):
+            session_delegate = self.handler_delegate.find_session_delegate(session_id)
+            if session_delegate is None:
+                msg = f"未找到会话 {session_id}。"
+                logger.error(msg)
+                return JSONResponse(status_code=404, content={"error": msg})
+            try:
+                session_delegate.put_data(EngineChannelType.TEXT, payload.text, loopback=True)
+                return JSONResponse(status_code=200, content={"status": "ok"})
+            except Exception as e:
+                logger.opt(exception=True).error(f"向会话 {session_id} 发送文本失败: {e}")
+                return JSONResponse(status_code=500, content={"error": "发送失败"})
+
+        @fastapi.get('/manage/sessions')
+        async def list_sessions():
+            try:
+                engine = self.handler_delegate.engine_ref()
+                if engine is None:
+                    return JSONResponse(status_code=500, content={"error": "引擎不可用"})
+                sessions_info = []
+                now_monotonic = time.monotonic()
+                now_wall = time.time()
+                for sid, chat_session in engine.sessions.items():
+                    start_mono = getattr(chat_session.session_context, 'input_start_time', -1.0)
+                    uptime_sec = 0.0
+                    created_at_iso = None
+                    if start_mono and start_mono > 0:
+                        uptime_sec = max(0.0, now_monotonic - start_mono)
+                        created_at_epoch = now_wall - uptime_sec
+                        created_at_iso = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(created_at_epoch))
+                    sessions_info.append({
+                        'id': sid,
+                        'created_at_iso': created_at_iso,
+                        'uptime_seconds': round(uptime_sec, 3),
+                    })
+                sessions_info.sort(key=lambda x: (x['created_at_iso'] or ''), reverse=True)
+                return JSONResponse(status_code=200, content={"sessions": sessions_info})
+            except Exception as e:
+                logger.opt(exception=True).error(f"获取会话列表失败: {e}")
+                return JSONResponse(status_code=500, content={"error": "获取失败"})
+
+        @fastapi.get('/session/{session_id}/history')
+        async def session_history(session_id: str, page: int = 1, page_size: int = 20):
+            try:
+                engine = self.handler_delegate.engine_ref()
+                if engine is None:
+                    return JSONResponse(status_code=500, content={"error": "引擎不可用"})
+                chat_session = engine.sessions.get(session_id)
+                if chat_session is None:
+                    msg = f"未找到会话 {session_id}。"
+                    logger.error(msg)
+                    return JSONResponse(status_code=404, content={"error": msg})
+                history_list = None
+                for _name, record in chat_session.handlers.items():
+                    ctx = getattr(record.env, 'context', None)
+                    hist = getattr(ctx, 'history', None) if ctx is not None else None
+                    msg_hist = getattr(hist, 'message_history', None) if hist is not None else None
+                    if isinstance(msg_hist, list):
+                        history_list = msg_hist
+                        break
+                if history_list is None:
+                    return JSONResponse(status_code=200, content={"items": [], "total": 0, "page": page, "page_size": page_size})
+                total = len(history_list)
+                start = max(0, (page - 1) * page_size)
+                end = min(total, start + page_size)
+                items = []
+                for m in history_list[start:end]:
+                    items.append({
+                        'role': getattr(m, 'role', None),
+                        'content': getattr(m, 'content', ''),
+                        'timestamp': getattr(m, 'timestamp', None),
+                    })
+                return JSONResponse(status_code=200, content={"items": items, "total": total, "page": page, "page_size": page_size})
+            except Exception as e:
+                logger.opt(exception=True).error(f"获取会话 {session_id} 历史失败: {e}")
+                return JSONResponse(status_code=500, content={"error": "获取失败"})
+
         frontend_path = Path(DirectoryInfo.get_src_dir() + '/handlers/client/rtc_client/frontend')
         if frontend_path.exists():
             logger.info(f"从 {frontend_path} 提供前端服务")
             fastapi.mount('/dev', StaticFiles(directory=frontend_path), name="static")
             fastapi.add_route('/', RedirectResponse(url='/dev/index.html'))
+            fastapi.add_route('/manage', RedirectResponse(url='/dev/manage.html'))
         else:
             logger.warning(f"前端目录 {frontend_path} 不存在")
             fastapi.add_route('/', RedirectResponse(url='/gradio'))

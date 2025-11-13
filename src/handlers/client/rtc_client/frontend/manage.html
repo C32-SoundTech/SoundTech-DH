@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>后台管理</title>
+  <link rel="stylesheet" href="./assets/manage.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="title">会话列表</div>
+        <button id="refresh" class="btn">刷新</button>
+      </div>
+      <div id="sessionList" class="session-list"></div>
+    </aside>
+    <main class="content">
+      <div class="content-header">
+        <div class="content-title" id="contentTitle">未选择会话</div>
+        <div id="contentMeta" class="session-meta"></div>
+      </div>
+      <div id="history" class="history"></div>
+      <div class="composer">
+        <input id="inputText" type="text" placeholder="输入文本">
+        <button id="btnInput" class="btn">直接输入</button>
+        <button id="btnAnswer" class="btn">回答</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      sessions: [],
+      activeSessionId: null,
+      paging: { page: 1, pageSize: 20, total: 0, loading: false },
+      refreshTimer: null,
+    };
+
+    function fmtDuration(sec) {
+      const s = Math.max(0, Math.floor(sec || 0));
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const ss = s % 60;
+      return (h > 0 ? String(h).padStart(2,'0') + ':' : '') + String(m).padStart(2,'0') + ':' + String(ss).padStart(2,'0');
+    }
+
+    async function fetchSessions() {
+      const r = await fetch('/manage/sessions');
+      const j = await r.json();
+      const sessions = Array.isArray(j.sessions) ? j.sessions : [];
+      const normalized = sessions.map(x => {
+        if (typeof x === 'string') return { id: x, created_at_iso: null, uptime_seconds: null };
+        return { id: x.id, created_at_iso: x.created_at_iso || null, uptime_seconds: x.uptime_seconds || null };
+      });
+      normalized.sort((a,b) => {
+        const ka = a.created_at_iso || '';
+        const kb = b.created_at_iso || '';
+        return ka < kb ? 1 : (ka > kb ? -1 : 0);
+      });
+      state.sessions = normalized;
+      renderSessionList();
+    }
+
+    function renderSessionList() {
+      const el = document.getElementById('sessionList');
+      el.innerHTML = '';
+      if (!state.sessions.length) {
+        const empty = document.createElement('div');
+        empty.className = 'session-item';
+        empty.textContent = '暂无会话';
+        el.appendChild(empty);
+        return;
+      }
+      for (const s of state.sessions) {
+        const item = document.createElement('div');
+        item.className = 'session-item' + (s.id === state.activeSessionId ? ' active' : '');
+        const id = document.createElement('div');
+        id.className = 'session-id';
+        id.textContent = s.id;
+        const meta = document.createElement('div');
+        meta.className = 'session-meta';
+        const dur = document.createElement('span');
+        dur.textContent = '运行 ' + fmtDuration(s.uptime_seconds);
+        meta.appendChild(dur);
+        if (s.created_at_iso) {
+          const ct = document.createElement('span');
+          ct.textContent = s.created_at_iso;
+          meta.appendChild(ct);
+        }
+        item.appendChild(id);
+        item.appendChild(meta);
+        item.onclick = () => selectSession(s.id);
+        el.appendChild(item);
+      }
+    }
+
+    async function selectSession(sessionId) {
+      state.activeSessionId = sessionId;
+      state.paging = { page: 1, pageSize: 20, total: 0, loading: false };
+      document.getElementById('contentTitle').textContent = '会话 ' + sessionId;
+      document.getElementById('history').innerHTML = '';
+      await loadHistory(true);
+      scrollToBottom();
+    }
+
+    async function loadHistory(reset=false) {
+      if (!state.activeSessionId || state.paging.loading) return;
+      state.paging.loading = true;
+      const url = '/session/' + state.activeSessionId + '/history?page=' + state.paging.page + '&page_size=' + state.paging.pageSize;
+      const r = await fetch(url);
+      const j = await r.json();
+      const items = Array.isArray(j.items) ? j.items : [];
+      state.paging.total = j.total || items.length;
+      renderMessages(items, reset);
+      state.paging.loading = false;
+    }
+
+    function renderMessages(items, reset) {
+      const box = document.getElementById('history');
+      if (reset) {
+        const btn = document.createElement('button');
+        btn.className = 'load-more';
+        btn.textContent = '加载更多';
+        btn.onclick = async () => {
+          state.paging.page += 1;
+          await loadHistory();
+        };
+        box.appendChild(btn);
+      }
+      for (const m of items) {
+        const role = (m.role || '').toLowerCase();
+        const isUser = role === 'user';
+        const msg = document.createElement('div');
+        msg.className = 'msg' + (isUser ? ' msg-user' : '');
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + (isUser ? 'bubble-user' : 'bubble-assistant');
+        bubble.textContent = typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
+        const ts = document.createElement('div');
+        ts.className = 'timestamp';
+        ts.textContent = m.timestamp ? String(m.timestamp) : '';
+        msg.appendChild(bubble);
+        msg.appendChild(ts);
+        box.appendChild(msg);
+      }
+    }
+
+    function scrollToBottom() {
+      const box = document.getElementById('history');
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function send(action) {
+      if (!state.activeSessionId) return;
+      const text = document.getElementById('inputText').value || '';
+      const url = '/session/' + state.activeSessionId + '/' + action;
+      const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+      try { await r.json(); } catch {}
+    }
+
+    document.getElementById('refresh').onclick = fetchSessions;
+    document.getElementById('btnInput').onclick = () => send('input');
+    document.getElementById('btnAnswer').onclick = () => send('answer');
+
+    fetchSessions();
+    state.refreshTimer = setInterval(fetchSessions, 1000);
+  </script>
+</body>
+</html>
