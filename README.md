@@ -1,6 +1,6 @@
 # 声像科技 · 数字人平台
 
-![Static Badge](https://img.shields.io/badge/Python-3.11-blue?logo=python)![Static Badge](https://img.shields.io/badge/FastAPI-0.115.14-green?logo=fastAPI)![Static Badge](https://img.shields.io/badge/Jinja2-3.1.6-white?logo=Jinja)![Static Badge](https://img.shields.io/badge/Uvicorn-0.34.3-red?logo=serverless)
+![Static Badge](https://img.shields.io/badge/Python-3.11-blue?logo=python) ![Static Badge](https://img.shields.io/badge/FastAPI-0.115.14-green?logo=fastAPI) ![Static Badge](https://img.shields.io/badge/Jinja2-3.1.6-white?logo=Jinja) ![Static Badge](https://img.shields.io/badge/Uvicorn-0.34.3-red?logo=serverless)
 
 ![GitHub Created At](https://img.shields.io/github/created-at/C32-SoundTech/SoundTech-DH?logo=Github) ![GitHub contributors](https://img.shields.io/github/contributors/C32-SoundTech/SoundTech-DH?logo=Github) ![GitHub last commit](https://img.shields.io/github/last-commit/C32-SoundTech/SoundTech-DH?logo=Github)
 
