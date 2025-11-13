@@ -14,7 +14,7 @@ default:
     handler_configs:
       LamClient:
         module: client/h5_rendering_client/client_handler_lam
-        asset_path: "lam_samples/libai.zip"
+        asset_path: "lam_models/huangrenxun.zip"
         connection_ttl: 1200
         turn_config:
           urls: ["turn:124.223.89.143:3478", "turn:zjgsu.icu:3478", "turns:124.223.89.143:5349", "turns:zjgsu.icu:5349"]
