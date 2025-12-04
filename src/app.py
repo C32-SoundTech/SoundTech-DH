@@ -6,6 +6,7 @@ import argparse
 import gradio as gr
 from loguru import logger
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from chat_engine.chat_engine import ChatEngine
 from engine_utils.directory_info import DirectoryInfo
@@ -33,6 +34,14 @@ class OpenAvatarChatWebServer(uvicorn.Server):
 
 def setup_app():
     app = FastAPI()
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     css = """
 

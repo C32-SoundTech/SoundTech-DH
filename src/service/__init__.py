@@ -31,5 +31,5 @@ def ollama_server():
 frp_thread = Thread(target=frpc_server, daemon=True)
 frp_thread.start()
 
-ollama_thread = Thread(target=ollama_server, daemon=True)
-ollama_thread.start()
+# ollama_thread = Thread(target=ollama_server, daemon=True)
+# ollama_thread.start()

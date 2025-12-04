@@ -114,6 +114,11 @@ class TextPayload(BaseModel):
     text: str
 
 
+class VisionPayload(BaseModel):
+    text: str
+    image: Optional[str] = None
+
+
 class ClientRtcContext(HandlerContext):
     def __init__(self, session_id: str):
         super().__init__(session_id)
@@ -284,6 +289,21 @@ class ClientHandlerRtc(ClientHandlerBase):
                 return JSONResponse(status_code=200, content={"status": "ok"})
             except Exception as e:
                 logger.opt(exception=True).error(f"向会话 {session_id} 发送文本失败: {e}")
+                return JSONResponse(status_code=500, content={"error": "发送失败"})
+
+        @fastapi.post('/session/{session_id}/answer_vision')
+        async def speak_to_session_vision_post(session_id: str, payload: VisionPayload):
+            session_delegate = self.handler_delegate.find_session_delegate(session_id)
+            if session_delegate is None:
+                msg = f"未找到会话 {session_id}。"
+                logger.error(msg)
+                return JSONResponse(status_code=404, content={"error": msg})
+            try:
+                text = f"{payload.text}\n<|image_url|>{payload.image}<|end|>"
+                session_delegate.put_data(EngineChannelType.TEXT, text, loopback=True)
+                return JSONResponse(status_code=200, content={"status": "ok"})
+            except Exception as e:
+                logger.opt(exception=True).error(f"向会话 {session_id} 发送图文失败: {e}")
                 return JSONResponse(status_code=500, content={"error": "发送失败"})
 
         @fastapi.get('/manage/sessions')

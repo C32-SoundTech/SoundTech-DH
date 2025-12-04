@@ -161,70 +161,71 @@ class RtcStream(AsyncAudioVideoStreamHandler):
         )
 
     def set_channel(self, channel):
-            super().set_channel(channel)
-            self.chat_channel = channel
+        super().set_channel(channel)
+        self.chat_channel = channel
+        
+        async def process_chat_history():
+            role = None
+            chat_id = None
+            while not self.quit.is_set():
+                chat_data = await self.client_session_delegate.get_data(EngineChannelType.TEXT)
+                if chat_data is None or chat_data.data is None:
+                    continue
+                logger.debug(f"Got chat data {str(chat_data)}")
+                current_role = 'human' if chat_data.type == ChatDataType.HUMAN_TEXT else 'avatar'
+                chat_id = uuid.uuid4().hex if current_role != role else chat_id
+                role = current_role
+                # 界面信息显示
+                self.chat_channel.send(json.dumps({'type': 'chat', 'message': chat_data.data.get_main_data(), 
+                                                    'id': chat_id, 'role': current_role}))  
+        asyncio.create_task(process_chat_history())
             
-            async def process_chat_history():
-                role = None
-                chat_id = None
-                while not self.quit.is_set():
-                    chat_data = await self.client_session_delegate.get_data(EngineChannelType.TEXT)
-                    if chat_data is None or chat_data.data is None:
-                        continue
-                    logger.debug(f"Got chat data {str(chat_data)}")
-                    current_role = 'human' if chat_data.type == ChatDataType.HUMAN_TEXT else 'avatar'
-                    chat_id = uuid.uuid4().hex if current_role != role else chat_id
-                    role = current_role
-                    self.chat_channel.send(json.dumps({'type': 'chat', 'message': chat_data.data.get_main_data(), 
-                                                        'id': chat_id, 'role': current_role}))  
-            asyncio.create_task(process_chat_history())
-                
-            @channel.on("message")
-            def _(message):
-                logger.info(f"Received message Custom: {message}")
-                try:
-                    message = json.loads(message)
-                except Exception as e:
-                    logger.info(e)
-                    message = {}
+        @channel.on("message")
+        def _(message):
+            logger.info(f"Received message Custom: {message}")
+            try:
+                message = json.loads(message)
+            except Exception as e:
+                logger.info(e)
+                message = {}
 
-                if self.client_session_delegate is None:
-                    return
-                timestamp = self.client_session_delegate.get_timestamp()
-                if timestamp[0] / timestamp[1] < self.stream_start_delay:
-                    return
-                logger.info(f'on_chat_datachannel: {message}')
-    
-                if message['type'] == 'stop_chat':
-                    self.client_session_delegate.emit_signal(
-                        ChatSignal(
-                            type=ChatSignalType.INTERRUPT,
-                            source_type=ChatSignalSourceType.CLIENT,
-                            source_name="rtc",
-                        )
-                    )
-                elif message['type'] == 'chat':
-                    channel.send(json.dumps({'type': 'avatar_end'}))
-                    if self.client_session_delegate.shared_states.enable_vad is False:
-                        return
-                    self.client_session_delegate.shared_states.enable_vad = False
-                    self.client_session_delegate.emit_signal(
-                        ChatSignal(
-                            # begin a new round of responding
-                            type=ChatSignalType.BEGIN,
-                            stream_type=ChatDataType.AVATAR_AUDIO,
-                            source_type=ChatSignalSourceType.CLIENT,
-                            source_name="rtc",
-                        )
-                    )
-                    self.client_session_delegate.put_data(
-                        EngineChannelType.TEXT,
-                        message['data'],
-                        loopback=True
-                    )
-                # else:
+            if self.client_session_delegate is None:
+                return
+            timestamp = self.client_session_delegate.get_timestamp()
+            if timestamp[0] / timestamp[1] < self.stream_start_delay:
+                return
+            logger.info(f'on_chat_datachannel: {message}')
 
-                # channel.send(json.dumps({"type": "chat", "unique_id": unique_id, "message": message}))
+            if message['type'] == 'stop_chat':
+                self.client_session_delegate.emit_signal(
+                    ChatSignal(
+                        type=ChatSignalType.INTERRUPT,
+                        source_type=ChatSignalSourceType.CLIENT,
+                        source_name="rtc",
+                    )
+                )
+            elif message['type'] == 'chat':
+                channel.send(json.dumps({'type': 'avatar_end'}))
+                if self.client_session_delegate.shared_states.enable_vad is False:
+                    return
+                self.client_session_delegate.shared_states.enable_vad = False
+                self.client_session_delegate.emit_signal(
+                    ChatSignal(
+                        # begin a new round of responding
+                        type=ChatSignalType.BEGIN,
+                        stream_type=ChatDataType.AVATAR_AUDIO,
+                        source_type=ChatSignalSourceType.CLIENT,
+                        source_name="rtc",
+                    )
+                )
+                self.client_session_delegate.put_data(
+                    EngineChannelType.TEXT,
+                    message['data'],
+                    loopback=True
+                )
+            # else:
+
+            # channel.send(json.dumps({"type": "chat", "unique_id": unique_id, "message": message}))
           
     async def on_chat_datachannel(self, message: Dict, channel):
         # {"type":"chat",id:"标识属于同一段话", "message":"Hello, world!"}

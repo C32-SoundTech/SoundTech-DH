@@ -1,5 +1,3 @@
-
-
 import os
 import re
 from typing import Dict, Optional, cast
@@ -105,33 +103,34 @@ class HandlerLLM(HandlerBase, ABC):
                output_definitions: Dict[ChatDataType, HandlerDataInfo]):
         output_definition = output_definitions.get(ChatDataType.AVATAR_TEXT).definition
         context = cast(LLMContext, context)
-        text = None
+        images = []
         if inputs.type == ChatDataType.CAMERA_VIDEO and context.enable_video_input:
             context.current_image = inputs.data.get_main_data()
             return
         elif inputs.type == ChatDataType.HUMAN_TEXT:
-            text = inputs.data.get_main_data()
+            chat_text = inputs.data.get_main_data()
+            if context.current_image is not None:
+                images.append(context.current_image)
+            matched = re.findall(r"<\|image_url\|>(.*?)<\|end\|>", chat_text)
+            if matched:
+                images.extend(matched)
+            chat_text = re.sub(r"<\|image_url\|>.*?<\|end\|>", "", chat_text)
         else:
             return
         speech_id = inputs.data.get_meta("speech_id")
         if (speech_id is None):
             speech_id = context.session_id
 
-        if text is not None:
-            context.input_texts += text
+        if chat_text is not None:
+            context.input_texts += chat_text
 
         text_end = inputs.data.get_meta("human_text_end", False)
         if not text_end:
             return
 
         chat_text = context.input_texts
-        chat_text = re.sub(r"<\|.*?\|>", "", chat_text)
-        if len(chat_text) < 1:
-            return
         logger.info(f'大模型 {context.model_name} 输入 {chat_text} ')
-        current_content = context.history.generate_next_messages(chat_text, 
-                                                                 [context.current_image] if context.current_image is not None else [])
-        logger.debug(f'大模型 {context.model_name} 输入 {current_content} ')
+        current_content = context.history.generate_next_messages(chat_text, images)
         try:
             completion = context.client.chat.completions.create(
                 model=context.model_name,  # 此处以qwen-plus为例，可按需更换模型名称。模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
