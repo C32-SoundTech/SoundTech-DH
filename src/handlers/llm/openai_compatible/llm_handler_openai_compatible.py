@@ -39,6 +39,7 @@ class LLMContext(HandlerContext):
         self.current_image = None
         self.history = None
         self.enable_video_input = False
+        self.shared_states = None
 
 
 class HandlerLLM(HandlerBase, ABC):
@@ -89,6 +90,7 @@ class HandlerLLM(HandlerBase, ABC):
         context.api_url = handler_config.api_url
         context.enable_video_input = handler_config.enable_video_input
         context.history = ChatHistory(history_length=handler_config.history_length)
+        context.shared_states = session_context.shared_states
         context.client = OpenAI(
             # 若没有配置环境变量，请用百炼API Key将下行替换为：api_key="sk-xxx",
             api_key=context.api_key,
@@ -170,6 +172,10 @@ class HandlerLLM(HandlerBase, ABC):
         context.input_texts = ''
         context.output_texts = ''
         logger.debug(f'大模型 {context.model_name} 输出 {context.output_texts} ')
+
+        if context.shared_states:
+            context.shared_states.enable_vad = True
+
         end_output = DataBundle(output_definition)
         end_output.set_main_data('')
         end_output.add_meta("avatar_text_end", True)

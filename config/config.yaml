@@ -17,7 +17,7 @@ default:
         asset_path: "lam_models/cxliu.zip"
         connection_ttl: 3600
         turn_config:
-          urls: ["turn:124.223.89.143:3478", "turn:zjgsu.icu:3478", "turns:124.223.89.143:5349", "turns:zjgsu.icu:5349"]
+          urls: ["turn:47.98.41.23:3478", "turn:zjgsu.icu:3478", "turns:47.98.41.23:5349", "turns:zjgsu.icu:5349"]
           username: "admin"
           credential: "admin"
       SileroVad:
@@ -31,9 +31,10 @@ default:
         enabled: True
         module: asr/sensevoice/asr_handler_sensevoice
         model_name: "iic/SenseVoiceSmall"
-      Edge_TTS:
-        module: tts/edgetts/tts_handler_edgetts
-        voice: "zh-CN-YunxiaoMultilingualNeural"
+      ChatTTS:
+        module: tts/chattts/tts_handler_chattts
+        audio_speed: 3
+        seed: 42
       LLMOpenAICompatible:
         enabled: True
         module: llm/openai_compatible/llm_handler_openai_compatible
@@ -42,8 +43,8 @@ default:
         history_length: 20
         system_prompt: 
           请你扮演一个 AI 助手，用简短的两三句对话来回答用户的问题，并在对话内容中加入合适的标点符号，不需要讨论标点符号相关的内容。
-          请使用纯文本进行回复，不要添加任何Markdown标记。
+          请使用纯文本进行回复，不要使用任何富文本标记，也不要添加任何Markdown标记。
         api_url: 'https://apis.iflow.cn/v1'
-        api_key: 'sk-e1fcff72f65b257ed2e6bceca2160236'
+        api_key: 'sk-28b073079cafcf632529e8565a9191a9'
       LAM_Driver:
         module: avatar/lam/avatar_handler_lam_audio2expression

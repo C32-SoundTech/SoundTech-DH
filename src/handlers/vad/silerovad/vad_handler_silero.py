@@ -246,7 +246,6 @@ class HandlerAudioVAD(HandlerBase, ABC):
             timestamp = extra_args.get("head_sample_id", head_sample_id)
             speech_id = f"speech-{context.session_id}-{context.speech_id}"
             if human_speech_end:
-                context.shared_states.enable_vad = False
                 context.reset()
             if audio_clip is not None:
                 output = DataBundle(output_definition)

@@ -1,0 +1,7 @@
+[project]
+name = "tts-handler-chattts"
+version = "0.1.0"
+requires-python = ">=3.10, <3.13"
+dependencies = [
+    "chattts>=0.2.4",
+]

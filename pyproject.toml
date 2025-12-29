@@ -37,6 +37,7 @@ dependencies = [
 [tool.uv.workspace]
 members = [
     "src/handlers/tts/edgetts",
+    "src/handlers/tts/chattts",
     "src/handlers/avatar/lam",
     "src/handlers/vad/silerovad",
     "src/handlers/asr/sensevoice",

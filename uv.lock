@@ -14,6 +14,7 @@ members = [
     "sensevoice",
     "silerovad",
     "soundtech",
+    "tts-handler-chattts",
 ]
 
 [[package]]
@@ -266,6 +267,23 @@ wheels = [
 ]
 
 [[package]]
+name = "chattts"
+version = "0.2.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numba" },
+    { name = "numpy" },
+    { name = "pybase16384" },
+    { name = "torch" },
+    { name = "torchaudio" },
+    { name = "tqdm" },
+    { name = "transformers" },
+    { name = "vector-quantize-pytorch" },
+    { name = "vocos" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0d/ac/f2de6f298148d96cd9a32a9b871af83685eaddec5ee506359432774cc171/chattts-0.2.4.tar.gz", hash = "sha256:7cb52721b1210a9132b75842b557495cb6a5737ecbb95f849164abc397339658", size = 176692, upload-time = "2025-05-23T13:01:11.302Z" }
+
+[[package]]
 name = "click"
 version = "8.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -433,6 +451,29 @@ wheels = [
 ]
 
 [[package]]
+name = "einops"
+version = "0.8.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e5/81/df4fbe24dff8ba3934af99044188e20a98ed441ad17a274539b74e82e126/einops-0.8.1.tar.gz", hash = "sha256:de5d960a7a761225532e0f1959e5315ebeafc0cd43394732f103ca44b9837e84", size = 54805, upload-time = "2025-02-09T03:17:00.434Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/87/62/9773de14fe6c45c23649e98b83231fffd7b9892b6cf863251dc2afa73643/einops-0.8.1-py3-none-any.whl", hash = "sha256:919387eb55330f5757c6bea9165c5ff5cfe63a642682ea788a6d472576d81737", size = 64359, upload-time = "2025-02-09T03:17:01.998Z" },
+]
+
+[[package]]
+name = "einx"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "frozendict" },
+    { name = "numpy" },
+    { name = "sympy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/95/af/2a2f83f981e969ae3ec5dc30f9b0cd1a258acabc2ff7b33eb9726e334e55/einx-0.3.0.tar.gz", hash = "sha256:17ff87c6a0f68ab358c1da489f00e95f1de106fd12ff17d0fb3e210aaa1e5f8c", size = 84758, upload-time = "2024-06-11T13:49:37.532Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/90/04/4a730d74fd908daad86d6b313f235cdf8e0cf1c255b392b7174ff63ea81a/einx-0.3.0-py3-none-any.whl", hash = "sha256:367d62bab8dbb8c4937308512abb6f746cc0920990589892ba0d281356d39345", size = 102958, upload-time = "2024-06-11T13:49:36.441Z" },
+]
+
+[[package]]
 name = "email-validator"
 version = "2.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -444,6 +485,18 @@ sdist = { url = "https://files.pythonhosted.org/packages/f5/22/900cb125c76b7aaa4
 wheels = [
     { url = "https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl", hash = "sha256:80f13f623413e6b197ae73bb10bf4eb0908faf509ad8362c5edeb0be7fd450b4", size = 35604, upload-time = "2025-08-26T13:09:05.858Z" },
 ]
+
+[[package]]
+name = "encodec"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "einops" },
+    { name = "numpy" },
+    { name = "torch" },
+    { name = "torchaudio" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/62/59/e47bbd0542d0e6f4ce9983d5eb458a01d4b42c81e5c410cb9e159b1061ae/encodec-0.1.1.tar.gz", hash = "sha256:36dde98ccfe6c51a15576476cadfcb3b35a63507b8b8555abd69889a6fba6772", size = 3736037, upload-time = "2022-10-25T16:13:21.471Z" }
 
 [[package]]
 name = "fastapi"
@@ -573,6 +626,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/9d/1f/3ee70b0a55137442038f2a33469cc5fddd7e0ad2abf83d7497c18a2b6923/flatbuffers-25.9.23.tar.gz", hash = "sha256:676f9fa62750bb50cf531b42a0a2a118ad8f7f797a511eda12881c016f093b12", size = 22067, upload-time = "2025-09-24T05:25:30.106Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ee/1b/00a78aa2e8fbd63f9af08c9c19e6deb3d5d66b4dda677a0f61654680ee89/flatbuffers-25.9.23-py2.py3-none-any.whl", hash = "sha256:255538574d6cb6d0a79a17ec8bc0d30985913b87513a01cce8bcdb6b4c44d0e2", size = 30869, upload-time = "2025-09-24T05:25:28.912Z" },
+]
+
+[[package]]
+name = "frozendict"
+version = "2.4.7"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/90/b2/2a3d1374b7780999d3184e171e25439a8358c47b481f68be883c14086b4c/frozendict-2.4.7.tar.gz", hash = "sha256:e478fb2a1391a56c8a6e10cc97c4a9002b410ecd1ac28c18d780661762e271bd", size = 317082, upload-time = "2025-11-11T22:40:14.251Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/38/74/f94141b38a51a553efef7f510fc213894161ae49b88bffd037f8d2a7cb2f/frozendict-2.4.7-py3-none-any.whl", hash = "sha256:972af65924ea25cf5b4d9326d549e69a9a4918d8a76a9d3a7cd174d98b237550", size = 16264, upload-time = "2025-11-11T22:40:12.836Z" },
 ]
 
 [[package]]
@@ -1515,6 +1577,25 @@ wheels = [
 ]
 
 [[package]]
+name = "pybase16384"
+version = "0.3.9"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cffi" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6f/cb/76baa74ed748e339b6e83e160c65b3e702410f26685ee4675e07e96dd46f/pybase16384-0.3.9-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:086377a44e48c298890edefc7d7bcaf689ab1b08c87c457a373e20bcfaf3bcc2", size = 438881, upload-time = "2025-11-16T16:23:52.603Z" },
+    { url = "https://files.pythonhosted.org/packages/5c/12/400efd7804cc90c073ffe0330e44b66d258d7a1027d2f1719c7951769761/pybase16384-0.3.9-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:47333706cf38af649dc7688ee4dff8f062023c94530d27a36ab93639cceaddc5", size = 329362, upload-time = "2025-11-16T16:23:54.718Z" },
+    { url = "https://files.pythonhosted.org/packages/b1/4b/e43e2c9c686f282de342a666ae3385dcd8a34f1ca3fba88a068931dcc0de/pybase16384-0.3.9-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:f26569e0ad2ca5830ba7df183b603e177f1bde2505b7880a20b7308c7443586b", size = 324962, upload-time = "2025-11-16T16:23:55.64Z" },
+    { url = "https://files.pythonhosted.org/packages/63/c2/78ba6de0ae6b2549dc6cf8f8b9a8bf4ca2ae522ce86f17409333263f4f8f/pybase16384-0.3.9-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:b1d390927671f02eeb7612f501108c48e49055c3ddf970776a7408c3d80cd055", size = 359067, upload-time = "2025-11-16T18:27:04.448Z" },
+    { url = "https://files.pythonhosted.org/packages/bb/a9/f10099497075934e1ca4737d4e82ce5de945d18f2361ef24ab32da93dd5f/pybase16384-0.3.9-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:ce60b0c05e75e59061f48acc1ad079ad2a7b53d560d98b73b47af85327c1332f", size = 365480, upload-time = "2025-11-16T18:27:05.347Z" },
+    { url = "https://files.pythonhosted.org/packages/98/cc/fe53d69e46c8e950a271806040f42cd0bfd7cecc3702f0527994a019b908/pybase16384-0.3.9-cp311-cp311-manylinux_2_34_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:a76f59effc47809695076971ee2fc17fcb730c15cc5b931c5da7522512fd6d02", size = 362620, upload-time = "2025-11-16T18:27:06.254Z" },
+    { url = "https://files.pythonhosted.org/packages/d0/2c/78cc235573c78546d413a4708ad8c680049e79cb6066acb6f8639e8e004e/pybase16384-0.3.9-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:846b9dd7ed099764d8eea383631bca514fdcaacfeb461191609d7d9d8a18ec47", size = 361174, upload-time = "2025-11-16T18:27:07.642Z" },
+    { url = "https://files.pythonhosted.org/packages/61/8c/4c5a0cd575e7dffeedadc3afbe888b153c68d488212f12921543a50d5bd9/pybase16384-0.3.9-cp311-cp311-musllinux_1_2_riscv64.whl", hash = "sha256:2d649a91ab5b6677a29766bae961ab33f33cb1199b968ad0cd78726041975465", size = 363853, upload-time = "2025-11-16T18:27:08.712Z" },
+    { url = "https://files.pythonhosted.org/packages/6e/6e/7716d3553de9a768e1802ef020f499ff6e29bd8ad59c20d0d0b7b7c2e00a/pybase16384-0.3.9-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:7e47fde08cb804ad63a60547a302b17b0a3f6420ef49aaad73544fc5a92d5fb7", size = 367396, upload-time = "2025-11-16T18:27:09.613Z" },
+]
+
+[[package]]
 name = "pycparser"
 version = "2.23"
 source = { registry = "https://pypi.org/simple" }
@@ -2373,6 +2454,17 @@ wheels = [
 ]
 
 [[package]]
+name = "tts-handler-chattts"
+version = "0.1.0"
+source = { virtual = "src/handlers/tts/chattts" }
+dependencies = [
+    { name = "chattts" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "chattts", specifier = ">=0.2.4" }]
+
+[[package]]
 name = "typer"
 version = "0.20.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2467,6 +2559,39 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/74/4f/256aca690709e9b008b7108bc85fba619a2bc37c6d80743d18abad16ee09/uvloop-0.22.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:56a2d1fae65fd82197cb8c53c367310b3eabe1bbb9fb5a04d28e3e3520e4f702", size = 3804529, upload-time = "2025-10-16T22:16:25.246Z" },
     { url = "https://files.pythonhosted.org/packages/7f/74/03c05ae4737e871923d21a76fe28b6aad57f5c03b6e6bfcfa5ad616013e4/uvloop-0.22.1-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:40631b049d5972c6755b06d0bfe8233b1bd9a8a6392d9d1c45c10b6f9e9b2733", size = 3621267, upload-time = "2025-10-16T22:16:26.819Z" },
     { url = "https://files.pythonhosted.org/packages/75/be/f8e590fe61d18b4a92070905497aec4c0e64ae1761498cad09023f3f4b3e/uvloop-0.22.1-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:535cc37b3a04f6cd2c1ef65fa1d370c9a35b6695df735fcff5427323f2cd5473", size = 3723105, upload-time = "2025-10-16T22:16:28.252Z" },
+]
+
+[[package]]
+name = "vector-quantize-pytorch"
+version = "1.27.15"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "einops" },
+    { name = "einx" },
+    { name = "torch" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5d/08/abe3abdb4f2000ea652c116bc11440b3d1c57c335e32b33cc946ed1e5254/vector_quantize_pytorch-1.27.15.tar.gz", hash = "sha256:81d2c2984bc1d97b11263740c4c5c2252a023d72b4e6614aeff4b1bdc882c678", size = 702966, upload-time = "2025-12-16T12:40:42.043Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/50/5f/efccf2a420d060fef5bccb80ae36b5b5b5442da1b4ca2e46016b0e250699/vector_quantize_pytorch-1.27.15-py3-none-any.whl", hash = "sha256:ef6dee2e12356e04f84555bc9fa95c837c363d1f465310fe58560a4378af3a4a", size = 52698, upload-time = "2025-12-16T12:40:40.771Z" },
+]
+
+[[package]]
+name = "vocos"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "einops" },
+    { name = "encodec" },
+    { name = "huggingface-hub" },
+    { name = "numpy" },
+    { name = "pyyaml" },
+    { name = "scipy" },
+    { name = "torch" },
+    { name = "torchaudio" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/db/48/1e4d3a4a97292e47ebaa18e3eae6ecb2f57bde47693ccab0e7acb23f9ffe/vocos-0.1.0.tar.gz", hash = "sha256:b488224dbe398ff7d4790a027ad659478b4bc02e465db992c62c12b32ca043d8", size = 21107, upload-time = "2023-10-14T00:57:29.631Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0a/45/82fe9b5696eb5dd4f84632f75b549b48bed0c33a5920b6309fbafd7e3477/vocos-0.1.0-py3-none-any.whl", hash = "sha256:0ac13eaef68596074301e912d781399b3defa4b4ca60b6bc52c8a4b9209ca235", size = 24085, upload-time = "2023-10-14T00:57:27.972Z" },
 ]
 
 [[package]]
